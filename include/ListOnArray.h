@@ -4,6 +4,39 @@
 using namespace std;
 
 template<class T1>
+class ListOnArray;
+
+template<class T2>
+class ListOnArrayIterator
+{
+private:
+	ListOnArray<T2>& link;
+	int index;
+public:
+	ListOnArrayIterator(ListOnArray<T2>& _v, int _index = -1) :link(_v), index(_index) {}
+	ListOnArrayIterator(ListOnArrayIterator& _v) :link(_v.link), index(_v.index) {}
+
+	ListOnArrayIterator& operator =(const ListOnArrayIterator& _lhs)
+	{
+		index = _lhs.index;
+		return(*this);
+	}
+	ListOnArrayIterator operator ++(int)
+	{
+		if (index != -1)
+			index = link.links[index];
+		return (*this);
+	}
+
+	T2& operator *()
+	{
+		if (this->index == -1)
+			throw logic_error("end");
+		return(link.data[index]);
+	}
+};
+
+template<class T1>
 class ListOnArray
 {
 private:
@@ -24,6 +57,14 @@ public:
 	int GetSize() { return Size; }
 	int GetCount() { return DataCount; }
 
+	ListOnArrayIterator<T1> begin()
+	{
+		return ListOnArrayIterator<T1>(*this, root);
+	}
+
+	template<class T2>
+	friend class ListOnArrayIterator;
+
 	T1& operator[](const int index);
 	void push_back(T1 value);
 	void push_front(T1 value);
@@ -37,10 +78,12 @@ public:
 template<class T2>
 ostream& operator<<(ostream& ostr, ListOnArray<T2>& _l)
 {
-
+	ListOnArrayIterator<int> k = _l.begin();
 	for (int i = 0; i < _l.GetCount(); i++)
-		ostr << _l[i] << " ";
-
+	{
+		ostr << *k << " ";
+		k++;
+	}
 	return ostr;
 }
 
@@ -64,11 +107,11 @@ ListOnArray<T1>::ListOnArray(ListOnArray& _list)
 {
 	data = new T1[_list.Size];
 	links = new int[_list.Size];
-	
+
 	root = _list.root;
 	for (int i = 0; i < _list.Size; i++)
 		links[i] = _list.links[i];
-	
+
 	while (root != -1)
 	{
 		data[root] = _list.data[root];
@@ -95,7 +138,7 @@ template<class T1>
 inline T1& ListOnArray<T1>::operator[](const int index)
 {
 	if (index < 0 || index >= DataCount)
-		throw -1;
+		throw - 1;
 
 	int counter = 0;
 	int temp = root;
@@ -113,7 +156,7 @@ template<class T1>
 void ListOnArray<T1>::push_back(T1 value)
 {
 	if (IsFull())
-		throw -1;
+		throw - 1;
 
 	if (IsEmpty())
 	{
@@ -145,7 +188,7 @@ template<class T1>
 void ListOnArray<T1>::push_front(T1 value)
 {
 	if (IsFull())
-		throw -1;
+		throw - 1;
 
 	if (IsEmpty())
 	{
@@ -171,7 +214,7 @@ template<class T1>
 T1 ListOnArray<T1>::pop_front()
 {
 	if (IsEmpty())
-		throw -1;
+		throw - 1;
 
 	T1 temp = data[root];
 	int current = links[root];
@@ -187,7 +230,7 @@ template<class T1>
 T1 ListOnArray<T1>::pop_back()
 {
 	if (IsEmpty())
-		throw -1;
+		throw - 1;
 
 	T1 temp;
 

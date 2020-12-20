@@ -12,8 +12,8 @@ TEST(list, can_copy)
 	lst.push_back(101);
 
 	ListOnArray<int> lst2(lst);
-
-	EXPECT_EQ(101, lst2[0]);
+	ListOnArrayIterator<int> i = lst2.begin();
+	EXPECT_EQ(101, *i);
 }
 
 TEST(list, cant_pop_in_empty_list)
